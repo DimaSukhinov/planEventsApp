@@ -1,0 +1,47 @@
+.paper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  width: 1000px;
+  height: 600px;
+  border: 1px solid #6666B5;
+  background-color: #fff;
+  border-radius: 15px;
+  overflow-y: auto;
+
+  .title {
+    display: flex;
+    align-items: center;
+    font-family: 'Cutive', serif;
+    color: #6666B5;
+    font-size: 30px;
+    margin: 20px 0;
+  }
+
+  .about {
+
+    .items {
+      display: flex;
+      flex-direction: row;
+
+      .gifts {
+        display: flex;
+
+        ul {
+          margin-top: 0;
+        }
+      }
+
+      .users {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}

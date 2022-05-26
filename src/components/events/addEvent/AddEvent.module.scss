@@ -1,0 +1,32 @@
+.paper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  width: 1000px;
+  height: 600px;
+  border: 2px solid #6666B5;
+  background-color: #fff;
+  border-radius: 15px;
+
+  .title {
+    font-family: 'Cutive', serif;
+    color: #6666B5;
+    font-size: 30px;
+    margin: 20px 0;
+  }
+
+  .input {
+    margin-bottom: 15px;
+  }
+
+  .button {
+    margin-top: 10px;
+    background-color: #6666B5;
+  }
+}
