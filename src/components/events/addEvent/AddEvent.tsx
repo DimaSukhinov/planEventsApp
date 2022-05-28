@@ -19,63 +19,87 @@ export const AddEvent = (props: AddEventPropsType) => {
     const [title, setTitle] = useState<string>('')
     const [location, setLocation] = useState<string>('')
     const [date, setDate] = useState<Date | null>(null)
-    const [error, setError] = useState<string | null>(null)
+    const [titleError, setTitleError] = useState<string | null>(null)
+    const [locationError, setLocationError] = useState<string | null>(null)
+    const [dateError, setDateError] = useState<string | null>(null)
 
-    const onTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setTitle(e.currentTarget.value), [])
-    const onLocationChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setLocation(e.currentTarget.value), [])
+    const onTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.currentTarget.value)
+        setTitleError(null)
+    }, [])
+    const onLocationChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setLocation(e.currentTarget.value)
+        setLocationError(null)
+    }, [])
     const onDataChangeHandler = useCallback((date: Date | null) => {
         if (date && date > new Date()) {
             setDate(date)
         }
+        setDateError(null)
     }, [])
 
     const addEvent = useCallback(() => {
-        if (title.trim() !== '' && date) {
+        if (title.trim() !== '' && location.trim() !== '' && date) {
             eventsAPI.createEvent(title, date.toString().split('+')[0], location).then()
             eventsAPI.allEvents().then((data) => {
                 dispatch(setEventsAC(data.data.user_events))
             })
             props.closeModal(false)
         } else {
-            setError('Title is required')
+            if (title.trim() === '') {
+                setTitleError('Укажите название')
+            }
+            if (location.trim() === '') {
+                setLocationError('Укажите место')
+            }
+            if (date === null) {
+                setDateError('Укажите дату и время')
+            }
         }
     }, [title, date, location, props, dispatch])
 
     return (
-        <div className={s.paper}>
-            <p className={s.title}>Новое мероприятие</p>
-            <div>
-                <p>Название мероприятия:</p>
-                <TextField variant="outlined" value={title} onChange={onTitleChangeHandler}
-                           error={!!error} helperText={error} className={s.input} style={{width: '207px', height: '56px'}}/>
+        <>
+            <div className={s.paper}>
+                <p className={s.title}>Новое мероприятие</p>
+                <div>
+                    <p>Название мероприятия:</p>
+                    <TextField variant="outlined" value={title} onChange={onTitleChangeHandler}
+                               error={!!titleError} helperText={titleError} className={s.input}
+                               style={{width: '207px', height: '56px'}}/>
+                </div>
+                <div>
+                    <p>Место проведения:</p>
+                    <TextField variant="outlined" value={location} onChange={onLocationChangeHandler}
+                               className={s.input} error={!!locationError} helperText={locationError}
+                               style={{width: '207px', height: '56px'}}/>
+                </div>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/dd/yyyy"
+                        label="Дата"
+                        value={date}
+                        onChange={onDataChangeHandler}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                        error={!!dateError}
+                    />
+                    <KeyboardTimePicker
+                        label="Время"
+                        value={date}
+                        onChange={onDataChangeHandler}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change time',
+                        }}
+                        error={!!dateError}
+                        helperText={dateError}
+                    />
+                </MuiPickersUtilsProvider>
+                <Button variant="contained" onClick={addEvent} className={s.button}>Добавить</Button>
             </div>
-            <div>
-                <p>Место проведения:</p>
-                <TextField variant="outlined" value={location} onChange={onLocationChangeHandler}
-                           className={s.input} style={{width: '207px', height: '56px'}}/>
-            </div>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="MM/dd/yyyy"
-                    label="Дата"
-                    value={date}
-                    onChange={onDataChangeHandler}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                />
-                <KeyboardTimePicker
-                    label="Время"
-                    value={date}
-                    onChange={onDataChangeHandler}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change time',
-                    }}
-                />
-            </MuiPickersUtilsProvider>
-            <Button variant="contained" onClick={addEvent} className={s.button}>Добавить</Button>
-        </div>
+        </>
     )
 }

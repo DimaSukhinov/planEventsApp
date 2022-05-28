@@ -29,17 +29,17 @@ export const Registration = React.memo(() => {
         validate: (values) => {
             const errors: FormikErrorType = {}
             if (!values.userName) {
-                errors.userName = 'User name is required'
+                errors.userName = 'Введите имя'
             }
 
             if (!values.login) {
-                errors.login = 'Email is required'
+                errors.login = 'Введите email'
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.login)) {
-                errors.login = 'Invalid email address'
+                errors.login = 'Неверный email'
             }
 
             if (!values.password) {
-                errors.password = 'Password is required'
+                errors.password = 'Введите пароль'
             }
             return errors
         },

@@ -9,6 +9,7 @@ import {Event} from './event/Event'
 import {eventsAPI} from '../../api/api'
 import {useDispatch} from 'react-redux'
 import {setEventsAC} from '../../store/events-reducer'
+import {StylesProvider} from '@material-ui/core';
 
 export const Events = React.memo(() => {
 
@@ -34,15 +35,12 @@ export const Events = React.memo(() => {
                     <AddIcon/>
                     <p>Добавить мероприятие</p>
                 </div>
-                <Modal
-                    open={addEventModal}
-                    onClose={handleCloseAddEventModal}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                >
-                    {<AddEvent closeModal={setAddEventModal}/>}
-                </Modal>
-                <div>
+                <StylesProvider injectFirst>
+                    <Modal open={addEventModal} onClose={handleCloseAddEventModal}>
+                        {<AddEvent closeModal={setAddEventModal}/>}
+                    </Modal>
+                </StylesProvider>
+                <div style={{marginBottom: '30px'}}>
                     {events.map(e => <Event key={e.id} event={e}/>)}
                 </div>
             </div>

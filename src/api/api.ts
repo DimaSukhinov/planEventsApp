@@ -38,7 +38,7 @@ export const eventsAPI = {
     deleteEvent(id: number) {
         return instance.delete(`user/events/${id}`, authHeaders())
     },
-    changeTitle(id: number, data: changeTitleType) {
+    changeEvent(id: number, data: changeEventType) {
         return instance.patch(`user/events/${id}`, data, authHeaders())
     },
     inviteUser(userName: string, eventId: number) {
@@ -141,7 +141,7 @@ type createEventPostType = {
     location: string
 }
 
-type changeTitleType = {
+type changeEventType = {
     type: 'title' | 'date' | 'location'
     value: string | Date
 }
@@ -151,4 +151,5 @@ type GetInvitationsType = {
     title: string
     date: Date
     location: string
+    username: string
 }

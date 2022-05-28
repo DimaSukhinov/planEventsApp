@@ -17,8 +17,8 @@ import {setUsersAC} from '../../../store/users-reducer'
 import RedeemIcon from '@material-ui/icons/Redeem'
 import {setAppErrorAC} from '../../../store/auth-reducer'
 import EditIcon from '@material-ui/icons/Edit'
-import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns'
+import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
 
 type AboutEventPropsType = {
     event: EventType
@@ -47,7 +47,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
     const purchaseItems = useAppSelector(state => state.purchaseItems)
     const location = useAppSelector(state => state.locations)
 
-    const [error, setError] = useState<string | null>(null)
+    const [titleError, setTitleError] = useState<string | null>(null)
+    const [quantityError, setQuantityError] = useState<string | null>(null)
 
     const [giftModal, setGiftModal] = useState(false)
     const [itemModal, setItemModal] = useState(false)
@@ -69,20 +70,37 @@ export const AboutEvent = (props: AboutEventPropsType) => {
     const [giftTitle, setGiftTitle] = useState<string>('')
     const [giftQuantity, setGiftQuantity] = useState<number>(0)
 
-    const onGiftTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setGiftTitle(e.currentTarget.value), [])
-    const onGiftQuantityChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setGiftQuantity(+e.currentTarget.value), [])
+    const onGiftTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setGiftTitle(e.currentTarget.value)
+        setTitleError(null)
+    }, [])
+
+    const onGiftQuantityChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setGiftQuantity(+e.currentTarget.value)
+        setQuantityError(null)
+    }, [])
 
     const [itemTitle, setItemTitle] = useState<string>('')
     const [itemQuantity, setItemQuantity] = useState<number>(0)
 
-    const onItemTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setItemTitle(e.currentTarget.value), [])
-    const onItemQuantityChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setItemQuantity(+e.currentTarget.value), [])
+    const onItemTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setItemTitle(e.currentTarget.value)
+        setTitleError(null)
+    }, [])
+
+    const onItemQuantityChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setItemQuantity(+e.currentTarget.value)
+        setQuantityError(null)
+    }, [])
 
     const [userTitle, setUserTitle] = useState<string>('')
-    const onUserTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setUserTitle(e.currentTarget.value), [])
+    const onUserTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setUserTitle(e.currentTarget.value)
+        setTitleError(null)
+    }, [])
 
     const addGift = useCallback(() => {
-        if (giftTitle.trim() !== '') {
+        if (giftTitle.trim() !== '' && giftQuantity > 0) {
             giftsAPI.createGift(props.event.id, giftTitle, giftQuantity, false).then()
             eventsAPI.getEvent(props.event.id)
                 .then((data) => {
@@ -92,11 +110,17 @@ export const AboutEvent = (props: AboutEventPropsType) => {
             setGiftQuantity(0)
             setGiftModal(false)
         } else {
-            setError('Требуется название')
+            if (giftTitle.trim() === '') {
+                setTitleError('Требуется название')
+            }
+            if (giftQuantity <= 0) {
+                setQuantityError('Укажите количество')
+            }
         }
     }, [dispatch, giftQuantity, giftTitle, props.event.id])
+
     const addItem = useCallback(() => {
-        if (itemTitle.trim() !== '') {
+        if (itemTitle.trim() !== '' && itemQuantity > 0) {
             itemsAPI.createItem(props.event.id, itemTitle, itemQuantity, false).then()
             eventsAPI.getEvent(props.event.id)
                 .then((data) => {
@@ -106,7 +130,12 @@ export const AboutEvent = (props: AboutEventPropsType) => {
             setItemQuantity(0)
             setItemModal(false)
         } else {
-            setError('Требуется название')
+            if (itemTitle.trim() === '') {
+                setTitleError('Требуется название')
+            }
+            if (itemQuantity <= 0) {
+                setQuantityError('Укажите количество')
+            }
         }
     }, [dispatch, itemQuantity, itemTitle, props.event.id])
 
@@ -124,32 +153,35 @@ export const AboutEvent = (props: AboutEventPropsType) => {
             setUserTitle('')
             setUserModal(false)
         } else {
-            setError('Требуется название')
+            setTitleError('Требуется название')
         }
     }, [dispatch, props.event.id, userTitle])
 
     const onEventTitleChange = useCallback((title: string) => {
-        eventsAPI.changeTitle(props.event.id, {type: 'title', value: title})
+        eventsAPI.changeEvent(props.event.id, {type: 'title', value: title})
             .then(() => {
                 dispatch(changeEventTitleAC(props.event.id, title))
             })
     }, [dispatch, props.event.id])
+
     const onEventLocationChange = useCallback((location: string) => {
-        eventsAPI.changeTitle(props.event.id, {type: 'location', value: location})
+        eventsAPI.changeEvent(props.event.id, {type: 'location', value: location})
             .then(() => {
                 dispatch(changeLocationTitleAC(props.event.id, location))
             })
     }, [dispatch, props.event.id])
 
     const [date, setDate] = useState<Date | null | string>(null)
+
     const onDataChangeHandler = useCallback((date: Date | null) => {
         if (date && date > new Date()) {
             setDate(date)
         } else dispatch(setAppErrorAC('Неверная дата и время'))
     }, [dispatch])
+
     const onEventDateChange = useCallback(() => {
         if (date) {
-            eventsAPI.changeTitle(props.event.id, {type: 'date', value: date})
+            eventsAPI.changeEvent(props.event.id, {type: 'date', value: date})
                 .then(() => {
                     dispatch(changeEventDateAC(props.event.id, date.toString()))
                 })
@@ -164,6 +196,7 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                 props.closeModal(false)
             })
     }, [dispatch, props])
+
     const deleteGift = useCallback((giftId: number) => () => {
         giftsAPI.deleteGift(giftId, props.event.id).then()
         eventsAPI.getEvent(props.event.id)
@@ -173,6 +206,7 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                 } else dispatch(setGiftsAC([]))
             })
     }, [dispatch, props.event.id])
+
     const deleteItem = useCallback((itemId: number) => () => {
         itemsAPI.deleteItem(itemId, props.event.id).then()
         eventsAPI.getEvent(props.event.id)
@@ -193,6 +227,7 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                 dispatch(setGiftsAC(data.data.gifts))
             })
     }, [dispatch, props.event.id])
+
     const changeItemStatus = useCallback((itemId: number, status: boolean) => () => {
         itemsAPI.itemCheck(itemId, props.event.id)
             .then(() => {
@@ -215,8 +250,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                                                    id={props.event.id}/>
                 </p>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <p>Дата и время проведения
-                        : {props.event.date.toString().slice(0, 10) + ` ` + props.event.date.toString().slice(11, 16)}</p>
+                    <p>Дата и время
+                        проведения: {props.event.date.toString().slice(0, 10) + ` ` + props.event.date.toString().slice(11, 16)}</p>
                     <EditIcon onClick={handleOpenChangeDateModal} style={{marginLeft: '20px'}}/>
                     <Modal open={dateModal} onClose={handleCloseChangeDateModal}>
                         {
@@ -226,24 +261,12 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                             }}>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <p>Изменение даты</p>
-                                    <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="MM/dd/yyyy"
-                                        label="Дата"
-                                        value={date}
-                                        onChange={onDataChangeHandler}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
+                                    <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" label="Дата"
+                                                        value={date} onChange={onDataChangeHandler}
+                                                        KeyboardButtonProps={{'aria-label': 'change date'}}
                                     />
-                                    <KeyboardTimePicker
-                                        label="Время"
-                                        value={date}
-                                        onChange={onDataChangeHandler}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change time',
-                                        }}
+                                    <KeyboardTimePicker label="Время" value={date} onChange={onDataChangeHandler}
+                                                        KeyboardButtonProps={{'aria-label': 'change time'}}
                                     />
                                 </MuiPickersUtilsProvider>
                                 <Button variant="contained" onClick={onEventDateChange}
@@ -279,7 +302,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                         <Button onClick={handleOpenAddGiftModal}>Добавить подарок</Button>
                         <Modal open={giftModal} onClose={handleCloseAddGiftModal}>
                             {<AddGiftAndItemModal title={giftTitle} quantity={giftQuantity}
-                                                  onTitleChangeHandler={onGiftTitleChangeHandler} error={error}
+                                                  onTitleChangeHandler={onGiftTitleChangeHandler}
+                                                  titleError={titleError} quantityError={quantityError}
                                                   add={addGift} onQuantityChangeHandler={onGiftQuantityChangeHandler}
                             />}
                         </Modal>
@@ -312,7 +336,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                         <Button onClick={handleOpenAddItemModal}>Добавить покупку</Button>
                         <Modal open={itemModal} onClose={handleCloseAddItemModal}>
                             {<AddGiftAndItemModal title={itemTitle} quantity={itemQuantity}
-                                                  onTitleChangeHandler={onItemTitleChangeHandler} error={error}
+                                                  onTitleChangeHandler={onItemTitleChangeHandler}
+                                                  titleError={titleError} quantityError={quantityError}
                                                   add={addItem} onQuantityChangeHandler={onItemQuantityChangeHandler}
                             />}
                         </Modal>
@@ -322,7 +347,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                         <div className={s.users}>
                             <ul>
                                 {
-                                    users.map(u => <li>{u.userName}: {u.isAccepted === null ? 'на рассмотрении' : !u.isAccepted ? 'отклонено' : 'принято'}</li>)
+                                    users.map(u =>
+                                        <li>{u.userName}: {u.isAccepted === null ? 'на рассмотрении' : !u.isAccepted ? 'отклонено' : 'принято'}</li>)
                                 }
                             </ul>
                             <Button onClick={handleOpenAddUserModal}>Добавить участника</Button>
@@ -334,7 +360,8 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                                              justifyContent: 'space-around', alignItems: 'center'
                                          }}>
                                         <TextField label="Имя пользователя" variant="outlined" value={userTitle}
-                                                   onChange={onUserTitleChangeHandler}/>
+                                                   onChange={onUserTitleChangeHandler} error={!!titleError}
+                                                   helperText={titleError}/>
                                         <Button variant="contained" onClick={inviteUser}
                                                 style={{backgroundColor: '#6666B5'}}>
                                             Добавить

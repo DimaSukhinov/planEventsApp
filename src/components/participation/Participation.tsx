@@ -32,6 +32,7 @@ export const Participation = React.memo(() => {
                         <div className={s.description}>
                             <h4>{i.title}</h4>
                             <p>Место: {i.location}</p>
+                            <p>Создатель: {i.username}</p>
                             <div className={s.date} style={{marginTop: '10px'}}>
                                 {i.date.toString().slice(0, 10) + ` ` + i.date.toString().slice(11, 16)}
                             </div>

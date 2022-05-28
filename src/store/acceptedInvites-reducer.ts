@@ -22,4 +22,5 @@ export type AcceptedInvitesItemType = {
     title: string
     date: Date
     location: string
+    username: string
 }
