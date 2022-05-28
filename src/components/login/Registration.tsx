@@ -7,21 +7,23 @@ import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import {useFormik} from 'formik'
-import {NavLink} from 'react-router-dom';
-import {authAPI} from '../../api/api';
+import {NavLink, useNavigate} from 'react-router-dom'
+import {authAPI} from '../../api/api'
 
 type FormikErrorType = {
-    email?: string
-    password?: string
     userName?: string
+    login?: string
+    password?: string
 }
 
 export const Registration = React.memo(() => {
 
+    const navigate = useNavigate()
+
     const formik = useFormik({
         initialValues: {
+            login: '',
             userName: '',
-            email: '',
             password: '',
         },
         validate: (values) => {
@@ -30,10 +32,10 @@ export const Registration = React.memo(() => {
                 errors.userName = 'User name is required'
             }
 
-            if (!values.email) {
-                errors.email = 'Email is required'
-            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-                errors.email = 'Invalid email address'
+            if (!values.login) {
+                errors.login = 'Email is required'
+            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.login)) {
+                errors.login = 'Invalid email address'
             }
 
             if (!values.password) {
@@ -42,8 +44,8 @@ export const Registration = React.memo(() => {
             return errors
         },
         onSubmit: values => {
-            // alert(JSON.stringify(values))
-            authAPI.register().then()
+            authAPI.register(formik.values).then()
+            navigate('/login')
         },
     })
 
@@ -61,13 +63,13 @@ export const Registration = React.memo(() => {
                             <p className={s.entry}>Регистрация</p>
                         </FormLabel>
                         <FormGroup>
+                            <TextField style={inputStyle} label="Email" margin="normal" {...formik.getFieldProps('login')}/>
+                            {formik.touched.login && formik.errors.login &&
+                                <div style={{'color': 'red'}}>{formik.errors.login}</div>}
                             <TextField label="Имя пользователя"
                                        margin="normal" {...formik.getFieldProps('userName')}/>
                             {formik.touched.userName && formik.errors.userName &&
                                 <div style={{'color': 'red'}}>{formik.errors.userName}</div>}
-                            <TextField style={inputStyle} label="Email" margin="normal" {...formik.getFieldProps('email')}/>
-                            {formik.touched.email && formik.errors.email &&
-                                <div style={{'color': 'red'}}>{formik.errors.email}</div>}
                             <TextField type="password" label="Пароль"
                                        margin="normal" {...formik.getFieldProps('password')}/>
                             {formik.touched.password && formik.errors.password &&

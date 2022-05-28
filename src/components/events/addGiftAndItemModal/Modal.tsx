@@ -15,8 +15,8 @@ type ModalPropsType = {
 export const AddGiftAndItemModal = (props: ModalPropsType) => {
 
     return (
-        <div className={s.paper}
-             style={{width: '400px', height: '300px', justifyContent: 'space-around'}}>
+        <div className={s.paper} style={{display: 'flex', width: '400px', height: '300px',
+            justifyContent: 'space-around', alignItems: 'center'}}>
             <TextField
                 variant="outlined"
                 label="Название"

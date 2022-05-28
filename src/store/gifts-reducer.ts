@@ -1,33 +1,31 @@
-const initialState: GiftsType[] = [
-    {id: 1111, eventId: 1, title: 'Флаг', status: true, quantity: 100},
-    {id: 1112, eventId: 1, title: 'Листик', status: false, quantity: 40},
-]
+const initialState: GiftsType[] = []
 
 export const giftsReducer = (state: GiftsType[] = initialState, action: ActionsType): GiftsType[] => {
     switch (action.type) {
-        case 'ADD-GIFT':
-            return [...state, {
-                id: 1113,
-                eventId: 1,
-                title: action.title,
-                status: false,
-                quantity: action.quantity
-            }]
+        case 'SET-GIFTS':
+            return action.gift.map(g => {
+                return {...g}
+            })
+        case 'CHANGE-GIFT-STATUS':
+            return state.map(g => g.id === action.eventId ? {...g, status: action.status} : g)
         default:
             return state
     }
 }
 
-export const addGiftAC = (title: string, quantity: number | null) => {
-    return {type: 'ADD-GIFT', title, quantity} as const
+export const setGiftsAC = (gift: GiftsType[]) => {
+    return {type: 'SET-GIFTS', gift} as const
+}
+export const changeGiftStatusAC = (status: boolean, eventId: number) => {
+    return {type: 'CHANGE-GIFT-STATUS', status, eventId} as const
 }
 
-type ActionsType = ReturnType<typeof addGiftAC>
+type ActionsType = ReturnType<typeof setGiftsAC> | ReturnType<typeof changeGiftStatusAC>
 
 export type GiftsType = {
     id: number
     eventId: number
     title: string
     status: boolean
-    quantity: number | null
+    quantity: number
 }

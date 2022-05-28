@@ -7,40 +7,58 @@ import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import {useFormik} from 'formik'
-import {NavLink} from 'react-router-dom'
+import {NavLink, useNavigate} from 'react-router-dom'
 import {authAPI} from '../../api/api'
+import {userKeyStorage} from '../../api/Storage'
+import {setAppErrorAC, setIsLoggedInAC} from '../../store/auth-reducer'
+import {useDispatch} from 'react-redux'
+import {useAppSelector} from '../../store/store'
 
 type FormikErrorType = {
-    email?: string
+    login?: string
     password?: string
-    rememberMe?: boolean
 }
 
 export const Login = React.memo(() => {
 
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
+
     const formik = useFormik({
         initialValues: {
-            email: '',
+            login: '',
             password: '',
         },
         validate: (values) => {
             const errors: FormikErrorType = {}
-            // if (!values.email) {
-            //     errors.email = 'Email is required'
-            // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-            //     errors.email = 'Invalid email address'
-            // }
-            //
-            // if (!values.password) {
-            //     errors.password = 'Password is required'
-            // }
+            if (!values.login) {
+                errors.login = 'Email is required'
+            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.login)) {
+                errors.login = 'Invalid email address'
+            }
+
+            if (!values.password) {
+                errors.password = 'Password is required'
+            }
             return errors
         },
         onSubmit: values => {
-            // alert(JSON.stringify(values))
-            authAPI.login().then()
+            authAPI.login(formik.values)
+                .then((data) => {
+                    userKeyStorage.setItem(data.data.token)
+                    dispatch(setIsLoggedInAC(true))
+                })
+                .catch(() => {
+                    dispatch(setAppErrorAC('Пользователь не найден'))
+                    formik.resetForm()
+                })
         },
     })
+
+    if (isLoggedIn) {
+        navigate('/events')
+    }
 
     const inputStyle = {
         width: '300px'
@@ -56,9 +74,10 @@ export const Login = React.memo(() => {
                             <p className={s.entry}>Вход</p>
                         </FormLabel>
                         <FormGroup>
-                            <TextField style={inputStyle} label="Email" margin="normal" {...formik.getFieldProps('email')}/>
-                            {formik.touched.email && formik.errors.email &&
-                                <div style={{'color': 'red'}}>{formik.errors.email}</div>}
+                            <TextField style={inputStyle} label="Email"
+                                       margin="normal" {...formik.getFieldProps('login')}/>
+                            {formik.touched.login && formik.errors.login &&
+                                <div style={{'color': 'red'}}>{formik.errors.login}</div>}
                             <TextField type="password" label="Пароль"
                                        margin="normal" {...formik.getFieldProps('password')}/>
                             {formik.touched.password && formik.errors.password &&

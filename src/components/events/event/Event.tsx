@@ -26,7 +26,7 @@ export const Event = (props: EventPropsType) => {
                 <div className={s.description}>
                     <h4>{props.event.title}</h4>
                     <div className={s.date}>
-                        {props.event.date.toString().slice(4, 21)}
+                        {props.event.date.toString().slice(0, 10) + ` ` + props.event.date.toString().slice(11, 16)}
                     </div>
                 </div>
             </div>

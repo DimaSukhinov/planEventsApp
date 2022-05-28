@@ -3,9 +3,10 @@ import s from './AddEvent.module.scss'
 import {TextField} from '@mui/material'
 import Button from '@mui/material/Button'
 import {useDispatch} from 'react-redux'
-import {addEventAC} from '../../../store/events-reducer'
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
+import {eventsAPI} from '../../../api/api'
+import {setEventsAC} from '../../../store/events-reducer'
 
 type AddEventPropsType = {
     closeModal: (open: boolean) => void
@@ -16,26 +17,43 @@ export const AddEvent = (props: AddEventPropsType) => {
     const dispatch = useDispatch()
 
     const [title, setTitle] = useState<string>('')
-    const [date, setDate] = useState<Date | null>(new Date())
+    const [location, setLocation] = useState<string>('')
+    const [date, setDate] = useState<Date | null>(null)
     const [error, setError] = useState<string | null>(null)
 
     const onTitleChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setTitle(e.currentTarget.value), [])
-    const onDataChangeHandler = useCallback((date: Date | null) => setDate(date), [])
+    const onLocationChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => setLocation(e.currentTarget.value), [])
+    const onDataChangeHandler = useCallback((date: Date | null) => {
+        if (date && date > new Date()) {
+            setDate(date)
+        }
+    }, [])
 
     const addEvent = useCallback(() => {
         if (title.trim() !== '' && date) {
-            dispatch(addEventAC(title, date.toString().slice(4, 21)))
+            eventsAPI.createEvent(title, date.toString().split('+')[0], location).then()
+            eventsAPI.allEvents().then((data) => {
+                dispatch(setEventsAC(data.data.user_events))
+            })
             props.closeModal(false)
         } else {
             setError('Title is required')
         }
-    }, [dispatch, date, props, title])
+    }, [title, date, location, props, dispatch])
 
     return (
         <div className={s.paper}>
             <p className={s.title}>Новое мероприятие</p>
-            <TextField label="Название мероприятия" variant="outlined" value={title} onChange={onTitleChangeHandler}
-                       error={!!error} helperText={error} className={s.input}/>
+            <div>
+                <p>Название мероприятия:</p>
+                <TextField variant="outlined" value={title} onChange={onTitleChangeHandler}
+                           error={!!error} helperText={error} className={s.input} style={{width: '207px', height: '56px'}}/>
+            </div>
+            <div>
+                <p>Место проведения:</p>
+                <TextField variant="outlined" value={location} onChange={onLocationChangeHandler}
+                           className={s.input} style={{width: '207px', height: '56px'}}/>
+            </div>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     disableToolbar

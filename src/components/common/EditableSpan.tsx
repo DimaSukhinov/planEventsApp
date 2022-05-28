@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField'
 import EditIcon from '@material-ui/icons/Edit'
 
 type EditableSpanPropsType = {
+    id: number
     value: string
     onChange: (newValue: string) => void
 }
@@ -25,7 +26,9 @@ export const EditableSpan = React.memo((props: EditableSpanPropsType) => {
             activateViewMode()
         }
     }, [activateViewMode])
-    const changeTitle = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.currentTarget.value)
+    const changeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.currentTarget.value)
+    }
 
     return editMode
         ?
