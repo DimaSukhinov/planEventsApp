@@ -21,7 +21,7 @@ export const Event = (props: EventPropsType) => {
         <>
             <div className={s.event} onClick={handleOpenEventModal}>
                 <div>
-                    <img src={img} alt="img"/>
+                    <img src={props.event.img || img} alt="img"/>
                 </div>
                 <div className={s.description}>
                     <h4>{props.event.title}</h4>

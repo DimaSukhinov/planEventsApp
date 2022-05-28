@@ -1,10 +1,21 @@
+import img from '../assets/img.png'
+import img1 from '../assets/club.png'
+import img2 from '../assets/house.png'
+import img3 from '../assets/club2.png'
+import img4 from '../assets/newYear.png'
+import img5 from '../assets/house2.png'
+import img6 from '../assets/nature.png'
+import img7 from '../assets/nature2.png'
+
 const initialState: EventType[] = []
+
+const images = [img, img1, img2, img3, img4, img5, img6, img7, img, img1, img2, img3, img4, img5, img6, img7, img, img1, img2, img3, img4, img5, img6, img7]
 
 export const eventsReducer = (state: EventType[] = initialState, action: ActionsType): EventType[] => {
     switch (action.type) {
         case 'SET-EVENTS':
             return action.events.map(e => {
-                return {...e}
+                return {...e, img: images[e.id]}
             })
         case 'CHANGE-EVENT-TITLE':
             return state.map(e => e.id === action.eventId ? {...e, title: action.title} : e)
@@ -41,4 +52,5 @@ export type EventType = {
     ownerId: number
     title: string
     date: Date | string
+    img: any
 }
