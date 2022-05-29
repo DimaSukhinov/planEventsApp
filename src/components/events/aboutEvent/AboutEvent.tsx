@@ -19,10 +19,12 @@ import {setAppErrorAC} from '../../../store/auth-reducer'
 import EditIcon from '@material-ui/icons/Edit'
 import DateFnsUtils from '@date-io/date-fns'
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
+import {SvgSelector} from '../../../assets/SvgSelector';
 
 type AboutEventPropsType = {
     event: EventType
     closeModal: (open: boolean) => void
+    handleCloseEventModal: () => void
 }
 
 export const AboutEvent = (props: AboutEventPropsType) => {
@@ -183,7 +185,7 @@ export const AboutEvent = (props: AboutEventPropsType) => {
         if (date) {
             eventsAPI.changeEvent(props.event.id, {type: 'date', value: date})
                 .then(() => {
-                    dispatch(changeEventDateAC(props.event.id, date.toString()))
+                    dispatch(changeEventDateAC(props.event.id, date))
                 })
         }
         setDateModal(false)
@@ -239,19 +241,41 @@ export const AboutEvent = (props: AboutEventPropsType) => {
             })
     }, [dispatch, props.event.id])
 
+    const dateMonth = () => {
+        let month = props.event.date.toString().slice(4, 7)
+        if (month === 'Jan') month = '01'
+        if (month === 'Feb') month = '02'
+        if (month === 'Mar') month = '03'
+        if (month === 'Apr') month = '04'
+        if (month === 'May') month = '05'
+        if (month === 'Jun') month = '06'
+        if (month === 'Jul') month = '07'
+        if (month === 'Aug') month = '08'
+        if (month === 'Sep') month = '09'
+        if (month === 'Oct') month = '10'
+        if (month === 'Nov') month = '11'
+        if (month === 'Dec') month = '12'
+        return month
+    }
+
     return (
         <div className={s.paper}>
             <div className={s.title}>
                 <EditableSpan value={props.event.title} onChange={onEventTitleChange} id={props.event.id}/>
             </div>
-            <DeleteIcon onClick={deleteEvent} style={{position: 'absolute', right: 30, top: 30}}/>
+            <DeleteIcon onClick={deleteEvent} style={{position: 'absolute', right: 35, top: 35}}/>
             <div className={s.about}>
                 <p>Место проведения: <EditableSpan value={location.title} onChange={onEventLocationChange}
                                                    id={props.event.id}/>
                 </p>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <p>Дата и время
-                        проведения: {props.event.date.toString().slice(0, 10) + ` ` + props.event.date.toString().slice(11, 16)}</p>
+                        проведения: {
+                            props.event.isDateChange
+                                ? props.event.date.toString().slice(11, 15) + '-' + dateMonth()
+                                + '-' + props.event.date.toString().slice(8, 10) + ' ' + props.event.date.toString().slice(16, 21)
+                                : props.event.date.toString().slice(0, 10) + ' ' + props.event.date.toString().slice(11, 16)
+                        }</p>
                     <EditIcon onClick={handleOpenChangeDateModal} style={{marginLeft: '20px'}}/>
                     <Modal open={dateModal} onClose={handleCloseChangeDateModal}>
                         {
@@ -263,8 +287,7 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                                     <p>Изменение даты</p>
                                     <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" label="Дата"
                                                         value={date} onChange={onDataChangeHandler}
-                                                        KeyboardButtonProps={{'aria-label': 'change date'}}
-                                    />
+                                                        KeyboardButtonProps={{'aria-label': 'change date'}}/>
                                     <KeyboardTimePicker label="Время" value={date} onChange={onDataChangeHandler}
                                                         KeyboardButtonProps={{'aria-label': 'change time'}}
                                     />
@@ -372,6 +395,9 @@ export const AboutEvent = (props: AboutEventPropsType) => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className={s.close} onClick={props.handleCloseEventModal}>
+                <SvgSelector svgId={'CLOSE'}/>
             </div>
         </div>
     )

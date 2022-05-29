@@ -22,7 +22,7 @@ export const eventsReducer = (state: EventType[] = initialState, action: Actions
         case 'DELETE-EVENT':
             return state.filter(e => e.id !== action.eventId)
         case 'CHANGE-EVENT-DATE':
-            return state.map(e => e.id === action.eventId ? {...e, date: action.date} : e)
+            return state.map(e => e.id === action.eventId ? {...e, date: action.date, isDateChange: true} : e)
         default:
             return state
     }
@@ -53,4 +53,5 @@ export type EventType = {
     title: string
     date: Date | string
     img: any
+    isDateChange: boolean
 }

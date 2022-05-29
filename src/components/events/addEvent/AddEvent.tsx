@@ -7,9 +7,11 @@ import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@
 import DateFnsUtils from '@date-io/date-fns'
 import {eventsAPI} from '../../../api/api'
 import {setEventsAC} from '../../../store/events-reducer'
+import {SvgSelector} from '../../../assets/SvgSelector'
 
 type AddEventPropsType = {
     closeModal: (open: boolean) => void
+    handleCloseAddEventModal: () => void
 }
 
 export const AddEvent = (props: AddEventPropsType) => {
@@ -65,14 +67,12 @@ export const AddEvent = (props: AddEventPropsType) => {
                 <div>
                     <p>Название мероприятия:</p>
                     <TextField variant="outlined" value={title} onChange={onTitleChangeHandler}
-                               error={!!titleError} helperText={titleError} className={s.input}
-                               style={{width: '207px', height: '56px'}}/>
+                               error={!!titleError} helperText={titleError} className={s.input}/>
                 </div>
                 <div>
                     <p>Место проведения:</p>
                     <TextField variant="outlined" value={location} onChange={onLocationChangeHandler}
-                               className={s.input} error={!!locationError} helperText={locationError}
-                               style={{width: '207px', height: '56px'}}/>
+                               className={s.input} error={!!locationError} helperText={locationError}/>
                 </div>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -99,6 +99,9 @@ export const AddEvent = (props: AddEventPropsType) => {
                     />
                 </MuiPickersUtilsProvider>
                 <Button variant="contained" onClick={addEvent} className={s.button}>Добавить</Button>
+                <div className={s.close} onClick={props.handleCloseAddEventModal}>
+                    <SvgSelector svgId={'CLOSE'}/>
+                </div>
             </div>
         </>
     )

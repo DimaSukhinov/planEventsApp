@@ -36,7 +36,8 @@ export const Event = (props: EventPropsType) => {
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
             >
-                {<AboutEvent event={props.event} closeModal={setEventModal}/>}
+                {<AboutEvent event={props.event} closeModal={setEventModal}
+                             handleCloseEventModal={handleCloseEventModal}/>}
             </Modal>
         </>
     )

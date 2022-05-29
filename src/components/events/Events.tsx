@@ -37,7 +37,7 @@ export const Events = React.memo(() => {
                 </div>
                 <StylesProvider injectFirst>
                     <Modal open={addEventModal} onClose={handleCloseAddEventModal}>
-                        {<AddEvent closeModal={setAddEventModal}/>}
+                        {<AddEvent closeModal={setAddEventModal} handleCloseAddEventModal={handleCloseAddEventModal}/>}
                     </Modal>
                 </StylesProvider>
                 <div style={{marginBottom: '30px'}}>

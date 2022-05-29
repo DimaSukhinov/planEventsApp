@@ -53,4 +53,20 @@
       }
     }
   }
+
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    svg {
+      transition: .3s;
+    }
+
+    &:hover {
+      svg {
+        transform: rotate(360deg);
+      }
+    }
+  }
 }
